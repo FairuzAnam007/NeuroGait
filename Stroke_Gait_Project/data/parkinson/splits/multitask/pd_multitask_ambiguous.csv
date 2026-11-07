@@ -1,0 +1,6 @@
+participant_id,split,task,count
+Parkinson_27,train,2_10mFast,2
+Parkinson_01,train,7_DGTUG,2
+Parkinson_01,train,8_DGTUGTask,2
+Parkinson_25,val,2_10mFast,2
+Parkinson_26,test,2_10mFast,2
