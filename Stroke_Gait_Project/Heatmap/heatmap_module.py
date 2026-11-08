@@ -17,7 +17,6 @@ ASSIGNMENTS_FILE = HEATMAP_DIR.parent / "reference_assignments.csv"
 
 
 def assign_heatmap(participant_key):
-
     images = sorted(
         p for p in HEATMAP_DIR.glob("*.png")
         if p.stat().st_size > 0
@@ -34,7 +33,7 @@ def assign_heatmap(participant_key):
     if ASSIGNMENTS_FILE.is_file():
 
         with ASSIGNMENTS_FILE.open(
-            "r", newline="", encoding="utf-8"
+                "r", newline="", encoding="utf-8"
         ) as file:
 
             for row in csv.DictReader(file):
@@ -45,7 +44,7 @@ def assign_heatmap(participant_key):
     if participant_key in assignments:
 
         path = (
-            HEATMAP_DIR / assignments[participant_key]
+                HEATMAP_DIR / assignments[participant_key]
         )
 
         if path.is_file() and path.stat().st_size > 0:
@@ -76,7 +75,7 @@ def assign_heatmap(participant_key):
     )
 
     with ASSIGNMENTS_FILE.open(
-        "a", newline="", encoding="utf-8"
+            "a", newline="", encoding="utf-8"
     ) as file:
 
         write_header = file.tell() == 0
@@ -96,16 +95,16 @@ def assign_heatmap(participant_key):
 
     return selected, None
 
-def crop_black_margin(image, padding_ratio=0.07):
 
+def crop_black_margin(image, padding_ratio=0.07):
     rgb = np.asarray(image.convert("RGB"))
 
     mx = rgb.max(axis=2).astype(np.int16)
     mn = rgb.min(axis=2).astype(np.int16)
 
     coloured = (
-        (mx >= 50) &
-        ((mx - mn) >= 30)
+            (mx >= 50) &
+            ((mx - mn) >= 30)
     )
 
     rows = np.flatnonzero(
@@ -142,16 +141,16 @@ def crop_black_margin(image, padding_ratio=0.07):
         left, top, right, bottom
     ))
 
-def _part_features(rgb, x_start, x_end):
 
+def _part_features(rgb, x_start, x_end):
     rgb = rgb[:, x_start:x_end, :]
 
     mx = rgb.max(axis=2).astype(np.int16)
     mn = rgb.min(axis=2).astype(np.int16)
 
     mask = (
-        (mx >= 60) &
-        ((mx - mn) >= 45)
+            (mx >= 60) &
+            ((mx - mn) >= 45)
     )
 
     column_counts = mask.sum(axis=0)
@@ -164,7 +163,7 @@ def _part_features(rgb, x_start, x_end):
         return None
 
     breaks = (
-        np.flatnonzero(np.diff(active) > 4) + 1
+            np.flatnonzero(np.diff(active) > 4) + 1
     )
 
     groups = np.split(active, breaks)
@@ -194,9 +193,9 @@ def _part_features(rgb, x_start, x_end):
     width = max(1, x1 - x0 + 1)
 
     crop = mask[
-        y0:y1 + 1,
-        x0:x1 + 1
-    ]
+           y0:y1 + 1,
+           x0:x1 + 1
+           ]
 
     ylo = int(round(0.19 * height))
 
@@ -248,8 +247,8 @@ def _part_features(rgb, x_start, x_end):
         "midfoot_contact_share": midshare
     }
 
-def estimate_image_indicators(image):
 
+def estimate_image_indicators(image):
     rgb = np.asarray(
         image.convert("RGB")
     )
@@ -275,14 +274,14 @@ def estimate_image_indicators(image):
     ra = right["contact_pixels"]
 
     difference = (
-        100 * abs(la - ra) /
-        max(1, la + ra)
+            100 * abs(la - ra) /
+            max(1, la + ra)
     )
 
     return left, right, difference
 
-def show_heatmap_panel(condition, participant_id):
 
+def show_heatmap_panel(condition, participant_id):
     st.subheader(
         "🦶 Plantar Heatmap & Foot Morphology"
     )
@@ -434,5 +433,6 @@ def show_heatmap_panel(condition, participant_id):
         "Image source: separate plantar-image dataset. "
         "Measurements are pixel-based estimates."
     )
+
 
 show_reference_heatmap = show_heatmap_panel
