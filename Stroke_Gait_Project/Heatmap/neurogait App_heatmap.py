@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+APP_DIR = Path(__file__).resolve().parent
+
 ROOT = next(
     (
         candidate for candidate in (APP_DIR, *APP_DIR.parents)
@@ -28,7 +30,6 @@ PD_SRC = SRC / "parkinson"
 for folder in (APP_DIR, SRC, PD_SRC):
     if str(folder) not in sys.path:
         sys.path.insert(0, str(folder))
-
 from heatmap_module import show_heatmap_panel
 
 STROKE_MODEL = ROOT / "models" / "cnn_lstm_best.pt"
@@ -375,6 +376,7 @@ button[data-baseweb="tab"][aria-selected="true"] p {
 """
 
 st.markdown(CSS, unsafe_allow_html=True)
+
 HERO_HTML = (
     '<div class="neurogait-hero">'
     '<div class="ng-heading">'
@@ -406,6 +408,7 @@ st.markdown(
     HERO_HTML,
     unsafe_allow_html=True
 )
+
 
 @st.cache_resource(show_spinner="Loading Stroke inference module...")
 def load_stroke_functions():
@@ -637,6 +640,7 @@ stroke_tab, pd_tab = st.tabs([
     "🚶 Parkinson's Screening"
 ])
 
+
 with stroke_tab:
 
     st.subheader(
@@ -738,6 +742,7 @@ with stroke_tab:
                     f"Stroke analysis failed: {error}"
                 )
 
+
     if "stroke_result" in st.session_state:
 
         result, signal, linked_id = (
@@ -753,12 +758,14 @@ with stroke_tab:
 
         st.divider()
 
+
         show_heatmap_panel(
             "stroke",
             linked_id
         )
 
         st.divider()
+
 
         signal_visualisations(
             signal,
@@ -864,6 +871,7 @@ with pd_tab:
                     f"Parkinson's analysis failed: {error}"
                 )
 
+
     if "pd_result" in st.session_state:
 
         result, signal, linked_id = (
@@ -881,6 +889,7 @@ with pd_tab:
 
         st.divider()
 
+
         show_heatmap_panel(
             "pd",
             linked_id
@@ -888,7 +897,7 @@ with pd_tab:
 
         st.divider()
 
-        # Bilateral IMU
+
         signal_visualisations(
             signal,
             36
