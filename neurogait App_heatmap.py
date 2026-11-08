@@ -10,6 +10,10 @@ import streamlit as st
 from heatmap_module import show_heatmap_panel
 
 
+# ------------------------------------------------------------
+# 1. PROJECT PATHS
+# ------------------------------------------------------------
+
 ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src"
 PD_SRC = SRC / "parkinson"
@@ -26,6 +30,9 @@ PD_MODEL = (
 )
 
 
+# ------------------------------------------------------------
+# 2. PAGE CONFIGURATION AND PREMIUM DESIGN
+# ------------------------------------------------------------
 
 st.set_page_config(
     page_title="NeuroGait | Intelligent Gait Screening",
@@ -265,6 +272,10 @@ h2, h3 {
     }
 }
 
+/* =========================================
+   FIX DARK AND UNREADABLE TEXT
+   ========================================= */
+
 /* All main headings */
 .block-container h1,
 .block-container h2,
@@ -358,6 +369,13 @@ button[data-baseweb="tab"][aria-selected="true"] p {
 st.markdown(CSS, unsafe_allow_html=True)
 
 
+# ------------------------------------------------------------
+# 3. FIXED NEUROGAIT HEADER
+# ------------------------------------------------------------
+
+# Keep HTML on one line to prevent Markdown
+# from displaying indented HTML as a code block.
+
 HERO_HTML = (
     '<div class="neurogait-hero">'
     '<div class="ng-heading">'
@@ -391,6 +409,10 @@ st.markdown(
 )
 
 
+# ------------------------------------------------------------
+# 4. LOAD EXISTING TRAINED MODELS
+# ------------------------------------------------------------
+
 @st.cache_resource(
     show_spinner="Loading trained gait models..."
 )
@@ -409,6 +431,10 @@ def load_prediction_functions():
         synchronize_pd_feet
     )
 
+
+# ------------------------------------------------------------
+# 5. SCREENING RESULT DISPLAY
+# ------------------------------------------------------------
 
 def result_summary(
     label,
@@ -453,6 +479,10 @@ def result_summary(
         "calibrated clinical disease probabilities."
     )
 
+
+# ------------------------------------------------------------
+# 6. IMU SIGNAL VISUALISATION
+# ------------------------------------------------------------
 
 def signal_visualisations(
     signal,
@@ -591,6 +621,10 @@ def signal_visualisations(
         plt.close(fig)
 
 
+# ------------------------------------------------------------
+# 7. MODEL FILE CHECK
+# ------------------------------------------------------------
+
 def model_checkpoint_notes():
 
     if not STROKE_MODEL.is_file():
@@ -616,6 +650,9 @@ def remove_saved_result(key):
     )
 
 
+# ------------------------------------------------------------
+# 8. MAIN SCREENING TABS
+# ------------------------------------------------------------
 
 stroke_tab, pd_tab = st.tabs([
     "🧠 Stroke Screening",
@@ -623,6 +660,9 @@ stroke_tab, pd_tab = st.tabs([
 ])
 
 
+# ------------------------------------------------------------
+# 9. STROKE SCREENING
+# ------------------------------------------------------------
 
 with stroke_tab:
 
@@ -730,7 +770,7 @@ with stroke_tab:
                     f"Stroke analysis failed: {error}"
                 )
 
-
+    # Stroke result
     if "stroke_result" in st.session_state:
 
         result, signal, linked_id = (
@@ -754,13 +794,16 @@ with stroke_tab:
 
         st.divider()
 
-
+        # Bilateral IMU
         signal_visualisations(
             signal,
             104
         )
 
 
+# ------------------------------------------------------------
+# 10. PARKINSON'S SCREENING
+# ------------------------------------------------------------
 
 with pd_tab:
 
@@ -866,7 +909,7 @@ with pd_tab:
                     f"Parkinson's analysis failed: {error}"
                 )
 
-
+    # Parkinson's result
     if "pd_result" in st.session_state:
 
         result, signal, linked_id = (
@@ -884,7 +927,7 @@ with pd_tab:
 
         st.divider()
 
-
+        # Plantar heatmap
         show_heatmap_panel(
             "pd",
             linked_id
@@ -892,13 +935,16 @@ with pd_tab:
 
         st.divider()
 
-
+        # Bilateral IMU
         signal_visualisations(
             signal,
             36
         )
 
 
+# ------------------------------------------------------------
+# 11. FOOTER
+# ------------------------------------------------------------
 
 st.divider()
 

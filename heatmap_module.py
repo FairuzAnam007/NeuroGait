@@ -1,5 +1,9 @@
+
+"""Plantar heatmap display and foot-contact measurements."""
+
 from pathlib import Path
 import csv
+
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -12,12 +16,16 @@ HEATMAP_DIR = (
     PROJECT_ROOT / "data" / "heatmaps" / "valid"
 )
 
-
+# Existing assignments preserved
 ASSIGNMENTS_FILE = (
     PROJECT_ROOT / "data" / "heatmaps"
     / "reference_assignments.csv"
 )
 
+
+# =========================================
+# 1. ASSIGN ONE IMAGE PER PARTICIPANT
+# =========================================
 
 def assign_heatmap(participant_key):
 
@@ -45,6 +53,7 @@ def assign_heatmap(participant_key):
                     row["image_file"]
                 )
 
+    # Return previously assigned image
     if participant_key in assignments:
 
         path = (
@@ -59,6 +68,7 @@ def assign_heatmap(participant_key):
             f"participant {participant_key}."
         )
 
+    # Choose an unused image
     occupied = set(assignments.values())
 
     unused = [
@@ -99,6 +109,10 @@ def assign_heatmap(participant_key):
 
     return selected, None
 
+
+# =========================================
+# 2. REMOVE EXTRA BLACK MARGINS
+# =========================================
 
 def crop_black_margin(image, padding_ratio=0.07):
 
@@ -147,6 +161,9 @@ def crop_black_margin(image, padding_ratio=0.07):
     ))
 
 
+# =========================================
+# 3. FOOT CONTACT FEATURE EXTRACTION
+# =========================================
 
 def _part_features(rgb, x_start, x_end):
 
@@ -204,6 +221,7 @@ def _part_features(rgb, x_start, x_end):
         x0:x1 + 1
     ]
 
+    # Approximate midfoot contact proportion
     ylo = int(round(0.19 * height))
 
     middle_lo = int(round(0.43 * height))
@@ -255,6 +273,10 @@ def _part_features(rgb, x_start, x_end):
     }
 
 
+# =========================================
+# 4. LEFT AND RIGHT FOOT ANALYSIS
+# =========================================
+
 def estimate_image_indicators(image):
 
     rgb = np.asarray(
@@ -288,6 +310,10 @@ def estimate_image_indicators(image):
 
     return left, right, difference
 
+
+# =========================================
+# 5. GUI HEATMAP PANEL
+# =========================================
 
 def show_heatmap_panel(condition, participant_id):
 
@@ -326,7 +352,7 @@ def show_heatmap_panel(condition, participant_id):
         )
         return
 
-
+    # Improve image presentation
     st.markdown(
         """
         <style>
@@ -345,7 +371,7 @@ def show_heatmap_panel(condition, participant_id):
         gap="large"
     )
 
-
+    # LEFT PANEL: HEATMAP
     with col_image:
 
         st.markdown(
@@ -365,7 +391,7 @@ def show_heatmap_panel(condition, participant_id):
             f"Heatmap image: {path.name}"
         )
 
-
+    # RIGHT PANEL: MEASUREMENTS
     with col_metrics:
 
         st.markdown(
@@ -447,5 +473,5 @@ def show_heatmap_panel(condition, participant_id):
     )
 
 
-
+# Compatibility with earlier GUI imports
 show_reference_heatmap = show_heatmap_panel
