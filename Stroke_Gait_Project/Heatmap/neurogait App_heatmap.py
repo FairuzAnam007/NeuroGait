@@ -7,14 +7,6 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-# ------------------------------------------------------------
-# 1. PROJECT PATHS: works with the GUI inside the Heatmap folder
-# ------------------------------------------------------------
-
-APP_DIR = Path(__file__).resolve().parent
-
-# The innermost project directory has src/, models/, and data/.
-# Search upward to handle extra Stroke_Gait_Project nesting.
 ROOT = next(
     (
         candidate for candidate in (APP_DIR, *APP_DIR.parents)
@@ -37,8 +29,6 @@ for folder in (APP_DIR, SRC, PD_SRC):
     if str(folder) not in sys.path:
         sys.path.insert(0, str(folder))
 
-# Load only this GUI's adjacent heatmap module, not any duplicate copy
-# from the parent folder.
 from heatmap_module import show_heatmap_panel
 
 STROKE_MODEL = ROOT / "models" / "cnn_lstm_best.pt"
@@ -51,11 +41,6 @@ PD_MODEL = (
 )
 PD_MEAN = PD_MODEL.parent / "pd_final_mean.npy"
 PD_STD = PD_MODEL.parent / "pd_final_std.npy"
-
-
-# ------------------------------------------------------------
-# 2. PAGE CONFIGURATION AND PREMIUM DESIGN
-# ------------------------------------------------------------
 
 st.set_page_config(
     page_title="NeuroGait | Intelligent Gait Screening",
@@ -390,15 +375,6 @@ button[data-baseweb="tab"][aria-selected="true"] p {
 """
 
 st.markdown(CSS, unsafe_allow_html=True)
-
-
-# ------------------------------------------------------------
-# 3. FIXED NEUROGAIT HEADER
-# ------------------------------------------------------------
-
-# Keep HTML on one line to prevent Markdown
-# from displaying indented HTML as a code block.
-
 HERO_HTML = (
     '<div class="neurogait-hero">'
     '<div class="ng-heading">'
@@ -431,11 +407,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
-# ------------------------------------------------------------
-# 4. LOAD EXISTING TRAINED MODELS
-# ------------------------------------------------------------
-
 @st.cache_resource(show_spinner="Loading Stroke inference module...")
 def load_stroke_functions():
     from predict import predict_gait
@@ -448,11 +419,6 @@ def load_pd_functions():
     from pd_final_predict import predict_signal
     from pd_preprocess import synchronize_pd_feet
     return predict_signal, synchronize_pd_feet
-
-
-# ------------------------------------------------------------
-# 5. SCREENING RESULT DISPLAY
-# ------------------------------------------------------------
 
 def result_summary(
     label,
@@ -496,11 +462,6 @@ def result_summary(
         "These are trained-model scores, not "
         "calibrated clinical disease probabilities."
     )
-
-
-# ------------------------------------------------------------
-# 6. IMU SIGNAL VISUALISATION
-# ------------------------------------------------------------
 
 def signal_visualisations(
     signal,
@@ -638,11 +599,6 @@ def signal_visualisations(
 
         plt.close(fig)
 
-
-# ------------------------------------------------------------
-# 7. MODEL FILE CHECK
-# ------------------------------------------------------------
-
 def model_checkpoint_notes():
     with st.expander("Project file paths and setup diagnostics", expanded=False):
         paths = {
@@ -676,20 +632,10 @@ def remove_saved_result(key):
         None
     )
 
-
-# ------------------------------------------------------------
-# 8. MAIN SCREENING TABS
-# ------------------------------------------------------------
-
 stroke_tab, pd_tab = st.tabs([
     "🧠 Stroke Screening",
     "🚶 Parkinson's Screening"
 ])
-
-
-# ------------------------------------------------------------
-# 9. STROKE SCREENING
-# ------------------------------------------------------------
 
 with stroke_tab:
 
@@ -792,7 +738,6 @@ with stroke_tab:
                     f"Stroke analysis failed: {error}"
                 )
 
-    # Stroke result
     if "stroke_result" in st.session_state:
 
         result, signal, linked_id = (
@@ -808,7 +753,6 @@ with stroke_tab:
 
         st.divider()
 
-        # Plantar heatmap
         show_heatmap_panel(
             "stroke",
             linked_id
@@ -816,16 +760,10 @@ with stroke_tab:
 
         st.divider()
 
-        # Bilateral IMU
         signal_visualisations(
             signal,
             104
         )
-
-
-# ------------------------------------------------------------
-# 10. PARKINSON'S SCREENING
-# ------------------------------------------------------------
 
 with pd_tab:
 
@@ -926,7 +864,6 @@ with pd_tab:
                     f"Parkinson's analysis failed: {error}"
                 )
 
-    # Parkinson's result
     if "pd_result" in st.session_state:
 
         result, signal, linked_id = (
@@ -944,7 +881,6 @@ with pd_tab:
 
         st.divider()
 
-        # Plantar heatmap
         show_heatmap_panel(
             "pd",
             linked_id
@@ -957,11 +893,6 @@ with pd_tab:
             signal,
             36
         )
-
-
-# ------------------------------------------------------------
-# 11. FOOTER
-# ------------------------------------------------------------
 
 st.divider()
 
